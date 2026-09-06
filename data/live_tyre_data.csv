@@ -1,0 +1,5 @@
+timestamp,tyre_position,tyre_age_km,remaining_life_km,pressure_psi,temperature_c,vibration,speed_kmh,pressure_change,temperature_change,simulation_step
+2026-08-27 14:20:55,FL,5.12,59994.88,32.49,27.51,0.129,30.7,0.363,-1.946,1
+2026-08-27 14:20:55,FR,5.12,59994.88,33.33,28.5,0.117,30.7,0.08,0.819,1
+2026-08-27 14:20:55,RL,5.12,59994.88,32.47,27.99,0.147,30.7,-0.06,0.2,1
+2026-08-27 14:20:55,RR,5.12,59994.88,32.22,27.19,0.105,30.7,-0.284,2.172,1

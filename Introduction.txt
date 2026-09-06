@@ -1,0 +1,420 @@
+================================================================================
+                    TPA — TYRE PERSONAL ASSISTANT
+                         PROJECT INTRODUCTION
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+TPA (Tyre Personal Assistant) is a real-time AI-powered tyre monitoring and
+predictive maintenance dashboard built with Streamlit. It simulates live tyre
+telemetry for a 4-wheel vehicle, runs ML predictions on tyre health and
+remaining useful life, monitors environmental emissions from tyre wear, and
+displays everything in a dark-themed cockpit-style web dashboard.
+
+--------------------------------------------------------------------------------
+PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+
+TyrePersonalAssistant/
+├── app.py                        Main Streamlit application
+├── generate_data.py              Synthetic historical data generator
+├── TPA.drawio                    Architecture/design diagram
+├── data/
+│   ├── tyre_historical_data.csv  Training dataset (100 vehicles × 4 tyres × 250 readings)
+│   ├── live_tyre_data.csv        Live simulation state
+│   └── tyre_simulation_state.csv Persisted simulation state
+├── models/
+│   ├── tyre_health_model.pkl     Trained health classification model
+│   ├── tyre_rul_model.pkl        Trained remaining useful life model
+│   └── tyre_env_model.pkl        Trained environmental impact model
+└── src/
+    ├── live_simulator.py         Live tyre state simulator
+    ├── predict_live.py           TyrePredictor class (health + RUL)
+    ├── predict_env.py            EnvPredictor class (environmental)
+    ├── alert_engine.py           Rule-based alert generator
+    ├── train_model.py            Health + RUL model training script
+    ├── train_env_model.py        Environmental model training script
+    └── test_model.py             Model testing utilities
+
+--------------------------------------------------------------------------------
+FILE-BY-FILE CODE SUMMARY
+--------------------------------------------------------------------------------
+
+1. app.py  (Main Application)
+------------------------------
+The entry point of the entire application. Runs as a Streamlit web app.
+
+IMPORTS:
+  - streamlit, streamlit.components.v1 — UI framework and HTML iframe rendering
+  - pandas as pd — DataFrame operations
+  - datetime — current time display
+  - src.live_simulator — initialize_new_tyres(), simulate_next_interval()
+  - src.predict_live — TyrePredictor (health + RUL ML predictions)
+  - src.predict_env — EnvPredictor (environmental ML predictions)
+  - src.alert_engine — generate_alert() rule-based alerts
+
+PAGE CONFIG:
+  - Title: "TPA | Tyre Personal Assistant", icon: 🛞, layout: wide,
+    sidebar collapsed
+
+MODEL LOADING (cached):
+  - load_predictor() → TyrePredictor instance (cached with @st.cache_resource)
+  - load_env_predictor() → EnvPredictor instance (cached with @st.cache_resource)
+
+SESSION STATE:
+  - st.session_state.live_tyre_data — current 4-tyre DataFrame
+  - st.session_state.simulation_count — number of 10-min intervals simulated
+  - st.session_state.predictions — latest health + RUL predictions
+  - st.session_state.env_predictions — latest environmental predictions
+
+PREDICTION PIPELINE:
+  - prepare_for_prediction(df): adds distance_km, tyre_age_days, wear_ratio,
+    vehicle_load_kg, braking_intensity columns before feeding to ML model
+  - On first load: initializes tyres and runs both predictors
+  - Env prediction columns (microplastic_g_per_km, dust_pm25_ug_m3) are merged
+    into the main predictions DataFrame
+
+SIMULATION BUTTON:
+  - Styled with dark navy→blue gradient, #39a6ff border, glow shadow
+  - Label: "⚡ SIMULATE NEXT 10 MIN"
+  - Placed in center column (ratio 0.5:2:0.5) inside top2 of st.columns([1,2,1])
+  - On click: calls simulate_next_interval(), re-runs both predictors,
+    increments simulation_count, calls st.rerun()
+
+HELPER FUNCTIONS:
+  - get_tyre(position) — filters predictions DataFrame by tyre position
+  - get_status_color(status) — maps HEALTHY/ATTENTION/WARNING/CRITICAL to hex colors
+    HEALTHY=#21e36d, ATTENTION=#ffd23f, WARNING=#ff9f1c, CRITICAL=#ff3b3b
+  - get_overall_status() — returns worst status across all 4 tyres with message
+
+COMPUTED METRICS:
+  - speed: mean speed_kmh clamped to [0, 180]
+  - rpm: derived from speed (0.8 + speed/20, max 8.0)
+  - avg_temp: mean temperature_c
+  - overall_health: mean of health_score (HEALTHY=100, ATTENTION=75,
+    WARNING=50, CRITICAL=20)
+  - worst_tyre: tyre with highest priority (CRITICAL first) and lowest RUL
+  - remaining_life / life_percentage: from worst tyre, base life = 60,000 km
+  - status_counts: dict counting HEALTHY/ATTENTION/WARNING/CRITICAL tyres
+  - avg_microplastic, avg_dust: mean env metrics across 4 tyres
+
+ALERT GENERATION:
+  - Iterates all 4 tyres, calls generate_alert(tyre) for each
+  - Filters out INFO-level alerts
+  - Groups alerts by tyre position for display
+
+TYRE DATA FORMATTER:
+  - tyre_dict(tyre): extracts pressure, temperature, status, color, rul,
+    abrasion, microplastic, dust, weather, load, braking into a plain dict
+
+SVG HELPERS:
+  - tyre_arc(value, max_val, color, size=120): generates SVG arc gauge
+    showing tyre pressure as a 75% arc circle
+  - status_badge(status, color): generates inline HTML badge with colored border
+
+ENV ALERT HTML BUILDER:
+  - Thresholds — Microplastics: CRITICAL >0.25 g/km, WARNING >0.15 g/km
+  - Thresholds — Dust PM2.5: CRITICAL >60 µg/m³, WARNING >35 µg/m³
+  - If no alerts: shows green "EMISSIONS WITHIN SAFE LIMITS" message
+  - Embedded inside the Tyre Health Score panel below health rows
+
+DASHBOARD HTML (f-string rendered via components.html, height=1100):
+  Structure:
+  ┌─────────────────────────────────────────────────────────┐
+  │  HEADER: time | TPA logo | LIVE TELEMETRY +sim minutes  │
+  ├──────────────┬──────────────────────┬───────────────────┤
+  │  SPEED GAUGE │   CAR + 4 TYRE CARDS │   RPM GAUGE       │
+  │  (conic SVG) │   (SVG car diagram)  │   (conic SVG)     │
+  ├──────────────┴──────────────────────┴───────────────────┤
+  │  STATUS BAR: OVERALL STATUS (full width)                │
+  ├──────────────┬──────────────────────┬───────────────────┤
+  │ HEALTH SCORE │   TPA ALERTS         │ REMAINING LIFE    │
+  │ circle+rows  │   scrollable list    │ 2×2 RUL grid      │
+  │ + ENV ALERTS │                      │                    │
+  └──────────────┴──────────────────────┴───────────────────┘
+  │  FOOTER: TPA • TYRE PERSONAL ASSISTANT • AI • IOT • ... │
+  └─────────────────────────────────────────────────────────┘
+
+  CSS highlights:
+  - Background: radial-gradient dark navy (#03070d → #0e2840)
+  - .panel: min-height 260px, dark gradient background
+  - .health-circle: 120×120px SVG ring
+  - .alert-scroll: max-height 280px, custom scrollbar
+  - .rul-item: padding 20px 14px, .rul-val font-size 26px
+  - .footer: font-size 16px, letter-spacing 3px, position sticky bottom:0
+  - .env-panel / .env-grid: 2-column grid for environmental metrics
+
+--------------------------------------------------------------------------------
+
+2. src/live_simulator.py
+--------------------------
+Simulates tyre state changes over 10-minute intervals.
+
+CONSTANTS:
+  - TOTAL_TYRE_LIFE_KM = 60,000
+  - TYRE_POSITIONS = ["FL", "FR", "RL", "RR"]
+  - SIMULATION_MULTIPLIER = 50 (scales distance per interval)
+  - WEATHER_OPTIONS = ["DRY", "WET", "RAIN", "SNOW"] with weights [0.55, 0.25, 0.15, 0.05]
+
+compute_env_metrics(speed, load, braking, weather, wear_ratio, vibration):
+  - Physics-based formula mirroring generate_data.py
+  - Base abrasion = 80 mg/km, scaled by speed^1.5, load, braking, weather,
+    wear, and vibration factors
+  - microplastic_g_per_km = abrasion × 0.60 / 1000
+  - dust_pm25_ug_m3 = abrasion × 0.15 / 1000 × 1e6 / 1000
+
+initialize_new_tyres():
+  - Creates a fresh 4-row DataFrame with brand-new tyre state
+  - Random initial pressure (32–34 PSI), temperature (25–30°C),
+    vibration (0.05–0.15), speed=0, age=0
+
+simulate_next_interval(current_state):
+  - Picks random speed (30–100 km/h), weather, vehicle load (300–650 kg),
+    braking intensity (exponential distribution, influenced by speed/weather)
+  - For each tyre: updates age, remaining life, pressure, temperature,
+    vibration, and env metrics
+  - Returns new 4-row DataFrame
+
+Sub-functions:
+  - calculate_distance(speed_kmh): distance = speed × (10/60) × 50
+  - generate_pressure(): random drift ±0.4, age-based leak probability,
+    weather and load effects, clamped to [20, 38] PSI
+  - generate_temperature(): physics model with speed heat, age heat,
+    load heat, brake heat, weather cooling, smoothed with 0.5 blend
+  - generate_vibration(): increases with wear ratio (0.10 + wear×0.70)
+
+--------------------------------------------------------------------------------
+
+3. src/predict_live.py  (TyrePredictor)
+-----------------------------------------
+Loads and runs the health classification and RUL regression models.
+
+MODEL PATHS:
+  - models/tyre_health_model.pkl — RandomForestClassifier package
+  - models/tyre_rul_model.pkl — RandomForestRegressor package
+
+__init__:
+  - Loads both .pkl files with joblib
+  - Extracts: health_model, label_encoder, features list, rul_model
+
+predict(tyre_data):
+  - Selects the 11 feature columns from input DataFrame
+  - health_model.predict() → encoded labels → inverse_transform to strings
+  - health_model.predict_proba() → max probability = confidence score
+  - rul_model.predict() → remaining_life_km (rounded to 0 decimals)
+  - Returns copy of input DataFrame with added columns:
+    health_status, remaining_life_km, confidence
+
+ML FEATURES (11):
+  tyre_age_days, distance_km, pressure_psi, temperature_c, vibration,
+  speed_kmh, pressure_change, temperature_change, vehicle_load_kg,
+  braking_intensity, wear_ratio
+
+--------------------------------------------------------------------------------
+
+4. src/predict_env.py  (EnvPredictor)
+---------------------------------------
+Loads and runs the environmental impact multi-output regression model.
+
+MODEL PATH: models/tyre_env_model.pkl
+
+__init__:
+  - Loads model, features, targets, weather_map, road_map from .pkl
+
+predict(tyre_data):
+  - Encodes weather_condition using weather_map (DRY=0, WET=1, RAIN=2, SNOW=3)
+  - Encodes road_condition using road_map (GOOD=0, NORMAL=1, ROUGH=2)
+  - Derives wear_ratio if not present (tyre_age_km / 60000, clipped to [0,1])
+  - Runs MultiOutputRegressor.predict() → 3 output columns
+  - Returns copy of input with added columns:
+    abrasion_rate_mg_km, microplastic_g_per_km, dust_pm25_ug_m3
+
+ENV MODEL FEATURES (9):
+  speed_kmh, vehicle_load_kg, braking_intensity, vibration, wear_ratio,
+  temperature_c, pressure_psi, weather_encoded, road_encoded
+
+--------------------------------------------------------------------------------
+
+5. src/alert_engine.py
+------------------------
+Pure rule-based alert generator. No ML — threshold logic only.
+
+generate_alert(row) → list of alert dicts [{severity, message}]
+
+Rules applied (in order):
+  PRESSURE:
+    < 26 PSI → CRITICAL: "Critical tyre pressure. Reduce driving..."
+    < 28 PSI → WARNING: "Low tyre pressure (X PSI). Inflate to 32–34 PSI."
+    < 30 PSI → WARNING: "Pressure slightly low. Monitor closely."
+
+  SLOW LEAK:
+    pressure_change < -0.3 → WARNING: "Rapid pressure drop. Possible slow leak."
+
+  TEMPERATURE:
+    > 45°C → CRITICAL: "Tyre overheating detected."
+    > 38°C → WARNING: "Tyre temperature is higher than normal."
+    > 33°C → WARNING: "Tyre temperature elevated. Monitor."
+
+  VIBRATION:
+    > 0.70 → CRITICAL: "Severe tyre vibration. Check for damage immediately."
+    > 0.50 → WARNING: "High tyre vibration. Check balance or road condition."
+
+  ML PREDICTION:
+    health_status == CRITICAL → CRITICAL: "ML model predicts critical tyre health."
+    health_status == WARNING  → WARNING:  "ML model predicts tyre health risk."
+
+  REMAINING LIFE:
+    < 2,000 km → CRITICAL: "Tyre replacement required immediately."
+    < 5,000 km → WARNING:  "Low remaining tyre life: X km."
+
+  ABRASION:
+    > 400 mg/km → CRITICAL: "Extreme tyre abrasion. Reduce speed and check load."
+    > 250 mg/km → WARNING:  "High tyre abrasion rate. Wearing faster than normal."
+
+  MICROPLASTICS:
+    > 0.25 g/km → CRITICAL: "Critical microplastic emission."
+    > 0.15 g/km → WARNING:  "Elevated microplastic shedding."
+
+  PM2.5 DUST:
+    > 60 µg/m³ → CRITICAL: "Toxic PM2.5 at dangerous levels."
+    > 35 µg/m³ → WARNING:  "High PM2.5 emission. Exceeds WHO threshold."
+
+  If no alerts triggered → INFO: "Tyre operating normally."
+
+--------------------------------------------------------------------------------
+
+6. src/train_model.py
+-----------------------
+Trains and saves the health classification and RUL regression models.
+
+DATA: data/tyre_historical_data.csv
+FEATURES (11): tyre_age_days, distance_km, pressure_psi, temperature_c,
+               vibration, speed_kmh, pressure_change, temperature_change,
+               vehicle_load_kg, braking_intensity, wear_ratio
+
+MODEL 1 — Health Classification:
+  - Target: tyre_health_status (HEALTHY / ATTENTION / WARNING / CRITICAL)
+  - Algorithm: RandomForestClassifier(n_estimators=200, max_depth=15,
+    min_samples_split=5, class_weight="balanced")
+  - 80/20 train-test split, stratified
+  - Saved as: models/tyre_health_model.pkl
+    (contains model, label_encoder, features)
+
+MODEL 2 — Remaining Useful Life (Regression):
+  - Target: remaining_life_km (continuous, 0–60,000 km)
+  - Algorithm: RandomForestRegressor(n_estimators=200, max_depth=20,
+    min_samples_split=5, n_jobs=-1)
+  - Metrics reported: MAE, RMSE, R²
+  - Saved as: models/tyre_rul_model.pkl (contains model, features)
+
+Also prints feature importance table for both models.
+
+--------------------------------------------------------------------------------
+
+7. src/train_env_model.py
+---------------------------
+Trains and saves the environmental impact multi-output regression model.
+
+DATA: data/tyre_historical_data.csv
+FEATURES (9): speed_kmh, vehicle_load_kg, braking_intensity, vibration,
+              wear_ratio, temperature_c, pressure_psi,
+              weather_encoded, road_encoded
+
+TARGETS (3): abrasion_rate_mg_km, microplastic_g_per_km, dust_pm25_ug_m3
+
+ALGORITHM: MultiOutputRegressor wrapping RandomForestRegressor
+  (n_estimators=200, max_depth=15, min_samples_split=5, n_jobs=-1)
+
+Encoding:
+  - weather_condition → weather_encoded: DRY=0, WET=1, RAIN=2, SNOW=3
+  - road_condition → road_encoded: GOOD=0, NORMAL=1, ROUGH=2
+
+Metrics: MAE and R² reported per target column
+Saved as: models/tyre_env_model.pkl
+  (contains model, features, targets, weather_map, road_map)
+
+--------------------------------------------------------------------------------
+
+8. generate_data.py
+---------------------
+Generates the synthetic historical training dataset.
+
+SCALE: 100 vehicles × 4 tyre positions × 250 readings = 100,000 records
+OUTPUT: data/tyre_historical_data.csv
+
+Per-tyre scenarios (randomly assigned):
+  - healthy (50%) — stable pressure/temp/vibration
+  - slow_leak (20%) — gradual pressure drop
+  - overheating (12%) — rising temperature
+  - high_vibration (10%) — increasing vibration
+  - critical (8%) — combined degradation
+
+Physics applied per reading:
+  - Speed: normal distribution ~65 km/h, clipped [0, 140]
+  - Weather: DRY/WET/RAIN/SNOW with realistic weights
+  - Road: GOOD/NORMAL/ROUGH
+  - Braking: exponential distribution, higher at speed >80 or bad weather
+  - Wear factor: accumulates based on pressure, temp, vibration, speed,
+    road, age, braking, weather
+  - Health status: risk_score thresholds
+    < 10 → HEALTHY, < 25 → ATTENTION, < 50 → WARNING, ≥ 50 → CRITICAL
+  - Environmental metrics: same compute_env_metrics() physics formula
+
+Columns generated (23 total):
+  timestamp, vehicle_id, tyre_id, tyre_position, manufacture_date,
+  tyre_age_days, distance_km, pressure_psi, temperature_c, vibration,
+  speed_kmh, road_condition, weather_condition, vehicle_load_kg,
+  braking_intensity, pressure_change, temperature_change, wear_ratio,
+  abrasion_rate_mg_km, microplastic_g_per_km, dust_pm25_ug_m3,
+  tyre_health_status, remaining_life_km
+
+--------------------------------------------------------------------------------
+KEY DESIGN DECISIONS
+--------------------------------------------------------------------------------
+
+1. Base tyre life = 60,000 km (industry standard reference)
+2. Simulation multiplier = 50 (each 10-min step covers ~50× real distance
+   to allow faster wear progression in demo)
+3. ML models are Random Forest (robust, no feature scaling needed)
+4. components.html() iframe used for the full dashboard — Streamlit widgets
+   cannot be injected into it; the simulate button stays outside as a
+   native Streamlit widget
+5. Environmental model predicts 3 targets simultaneously via MultiOutputRegressor
+6. Alert engine is purely rule-based (no ML) for explainability and reliability
+7. Health score mapping: HEALTHY=100, ATTENTION=75, WARNING=50, CRITICAL=20
+8. Overall status = worst status across all 4 tyres (CRITICAL > WARNING >
+   ATTENTION > HEALTHY)
+
+--------------------------------------------------------------------------------
+ALERT THRESHOLDS REFERENCE
+--------------------------------------------------------------------------------
+
+  Pressure:       CRITICAL < 26 PSI | WARNING < 28 PSI | CAUTION < 30 PSI
+  Temperature:    CRITICAL > 45°C   | WARNING > 38°C   | CAUTION > 33°C
+  Vibration:      CRITICAL > 0.70   | WARNING > 0.50
+  Remaining Life: CRITICAL < 2,000 km | WARNING < 5,000 km
+  Abrasion:       CRITICAL > 400 mg/km | WARNING > 250 mg/km
+  Microplastics:  CRITICAL > 0.25 g/km | WARNING > 0.15 g/km
+  Dust PM2.5:     CRITICAL > 60 µg/m³  | WARNING > 35 µg/m³
+
+--------------------------------------------------------------------------------
+DASHBOARD UI LAYOUT REFERENCE
+--------------------------------------------------------------------------------
+
+  Header:         Time (left) | TPA Logo (center) | LIVE TELEMETRY (right)
+  Cockpit row:    Speed gauge | Car + 4 tyre cards | RPM gauge
+  Status bar:     Full-width overall status banner
+  Bottom panels:  Health Score + Env Alerts | TPA Alerts | Remaining Life
+  Footer:         Sticky bottom, "TPA • TYRE PERSONAL ASSISTANT • AI • IOT..."
+
+  Color scheme:
+    Background:   #03070d (near black) with radial blue gradient
+    Healthy:      #21e36d (green)
+    Attention:    #ffd23f (yellow)
+    Warning:      #ff9f1c (orange)
+    Critical:     #ff3b3b (red)
+    Accent blue:  #39a6ff / #1570cc
+
+================================================================================
+                          END OF INTRODUCTION
+================================================================================
