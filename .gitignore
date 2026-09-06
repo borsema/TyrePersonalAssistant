@@ -1,0 +1,15 @@
+# IDE
+.idea/
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data (large CSV — regenerate locally)
+data/tyre_historical_data.csv
+
+# Secrets
+.env
