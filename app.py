@@ -131,6 +131,11 @@ div.stButton > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
+# ── Simulation info note ──────────────────────────────
+_sim_speed  = float(st.session_state.live_tyre_data["speed_kmh"].mean())
+_sim_dist   = round(_sim_speed * (10 / 60) * 50, 1)
+_total_dist = float(st.session_state.live_tyre_data["tyre_age_km"].mean())
+
 with top2:
     _, btn_col, _ = st.columns([0.5, 2, 0.5])
     with btn_col:
@@ -1475,6 +1480,16 @@ body{{
 
             +{simulation_minutes} MIN
 
+        </span>
+
+        <br>
+
+        <span style="
+            color:#4a7a9b;
+            font-size:9px;
+            letter-spacing:1px;
+        ">
+            📍 ~{_sim_dist:,.0f} km / step &nbsp;·&nbsp; {_total_dist:,.0f} km driven
         </span>
 
     </div>
