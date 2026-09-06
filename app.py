@@ -56,7 +56,14 @@ if _missing:
         "This only happens once on first deploy."
     ):
         for _path, _url in _missing:
-            urllib.request.urlretrieve(_url, _path)
+            try:
+                urllib.request.urlretrieve(_url, _path)
+            except Exception as e:
+                st.error(
+                    f"❌ Failed to download `{os.path.basename(_path)}`:\n\n{e}"
+                    "\n\nEnsure the repository is public and models are pushed via Git LFS."
+                )
+                st.stop()
     st.rerun()
 
 
