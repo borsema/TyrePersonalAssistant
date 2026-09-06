@@ -1,2 +1,2 @@
-[git]
-lfs = false
+#[git]
+#lfs = false
