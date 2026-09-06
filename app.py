@@ -1,3 +1,5 @@
+import os
+import urllib.request
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -23,6 +25,39 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+
+# ============================================================
+# MODEL DOWNLOAD (Streamlit Cloud — LFS fallback)
+# Raw download URLs for each model stored in GitHub LFS
+# ============================================================
+
+_REPO_RAW = (
+    "https://media.githubusercontent.com/media/"
+    "borsema/TyrePersonalAssistant/main/models"
+)
+
+_MODELS = {
+    "models/tyre_health_model.pkl": f"{_REPO_RAW}/tyre_health_model.pkl",
+    "models/tyre_rul_model.pkl":    f"{_REPO_RAW}/tyre_rul_model.pkl",
+    "models/tyre_env_model.pkl":    f"{_REPO_RAW}/tyre_env_model.pkl",
+}
+
+os.makedirs("models", exist_ok=True)
+
+_missing = [
+    (path, url) for path, url in _MODELS.items()
+    if not os.path.exists(path) or os.path.getsize(path) < 512
+]
+
+if _missing:
+    with st.spinner(
+        f"⏳ Downloading model files ({len(_missing)}/3)…  "
+        "This only happens once on first deploy."
+    ):
+        for _path, _url in _missing:
+            urllib.request.urlretrieve(_url, _path)
+    st.rerun()
 
 
 # ============================================================
