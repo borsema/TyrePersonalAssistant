@@ -218,10 +218,6 @@ print(
     f"Microplastic Shed : "
     f"{env_results['microplastic_g_per_km']:.6f} g/km"
 )
-print(
-    f"Dust (PM2.5)      : "
-    f"{env_results['dust_pm25_ug_m3']:.4f} µg/m³"
-)
 
 print("\n" + "-" * 60)
 

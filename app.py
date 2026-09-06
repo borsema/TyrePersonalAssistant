@@ -97,7 +97,7 @@ predictions = (
 
 env_preds = st.session_state.get("env_predictions", None)
 if env_preds is not None:
-    for col in ["abrasion_rate_mg_km", "microplastic_g_per_km", "dust_pm25_ug_m3"]:
+    for col in ["abrasion_rate_mg_km", "microplastic_g_per_km"]:
         if col in env_preds.columns:
             predictions[col] = env_preds[col].values
 
@@ -440,7 +440,6 @@ def tyre_dict(tyre):
         "rul":         float(tyre["remaining_life_km"]),
         "abrasion":    float(tyre.get("abrasion_rate_mg_km", 0)),
         "microplastic":float(tyre.get("microplastic_g_per_km", 0)),
-        "dust":        float(tyre.get("dust_pm25_ug_m3", 0)),
         "weather":     str(tyre.get("weather_condition", "DRY")),
         "load":        float(tyre.get("vehicle_load_kg", 400)),
         "braking":     float(tyre.get("braking_intensity", 0)),
@@ -556,7 +555,6 @@ def status_badge(
 # Avg env metrics across all 4 tyres
 avg_abrasion    = float(predictions.get("abrasion_rate_mg_km",    pd.Series([0])).mean()) if "abrasion_rate_mg_km"    in predictions.columns else 0.0
 avg_microplastic= float(predictions.get("microplastic_g_per_km", pd.Series([0])).mean()) if "microplastic_g_per_km" in predictions.columns else 0.0
-avg_dust        = float(predictions.get("dust_pm25_ug_m3",        pd.Series([0])).mean()) if "dust_pm25_ug_m3"        in predictions.columns else 0.0
 weather_now     = str(predictions["weather_condition"].iloc[0]) if "weather_condition" in predictions.columns else "DRY"
 
 
@@ -740,11 +738,6 @@ if avg_microplastic > 0.25:
     env_alert_rows.append(("🔴", "#ff3b3b", "CRITICAL", f"Microplastics {avg_microplastic:.4f} g/km — exceeds 0.25 g/km limit"))
 elif avg_microplastic > 0.15:
     env_alert_rows.append(("⚠️", "#ff9f1c", "WARNING", f"Microplastics {avg_microplastic:.4f} g/km — above 0.15 g/km threshold"))
-
-if avg_dust > 60:
-    env_alert_rows.append(("🔴", "#ff3b3b", "CRITICAL", f"PM2.5 {avg_dust:.1f} µg/m³ — exceeds 60 µg/m³ limit"))
-elif avg_dust > 35:
-    env_alert_rows.append(("⚠️", "#ff9f1c", "WARNING", f"PM2.5 {avg_dust:.1f} µg/m³ — above 35 µg/m³ threshold"))
 
 if env_alert_rows:
     env_alert_html = "".join(f'''
@@ -2402,7 +2395,6 @@ with st.expander("🤖  MODEL INTELLIGENCE OVERVIEW", expanded=False):
             env_output_desc = {
                 "abrasion_rate_mg_km":   "Tyre abrasion rate (mg/km)",
                 "microplastic_g_per_km": "Microplastic shedding (g/km)",
-                "dust_pm25_ug_m3":       "PM2.5 emission (µg/m³)",
             }
             for col_name, desc in env_output_desc.items():
                 st.markdown(f"`{col_name}` — {desc}")
@@ -2442,7 +2434,7 @@ with st.expander("📊  DATA SAMPLE", expanded=False):
     PREDICTION_COLS = [
         "tyre_position", "health_status", "confidence",
         "remaining_life_km",
-        "abrasion_rate_mg_km", "microplastic_g_per_km", "dust_pm25_ug_m3",
+        "abrasion_rate_mg_km", "microplastic_g_per_km",
     ]
     HIST_FEATURE_COLS = [
         "timestamp", "tyre_position", "tyre_age_days", "distance_km",
@@ -2453,7 +2445,7 @@ with st.expander("📊  DATA SAMPLE", expanded=False):
     HIST_LABEL_COLS = [
         "timestamp", "tyre_position",
         "tyre_health_status", "remaining_life_km",
-        "abrasion_rate_mg_km", "microplastic_g_per_km", "dust_pm25_ug_m3",
+        "abrasion_rate_mg_km", "microplastic_g_per_km",
     ]
 
     # ── Tab 1: Live Prediction Data ───────────────────────────────
@@ -2904,10 +2896,7 @@ with st.expander("⚙️  DATA GENERATION — FORMULAS & CALCULATIONS", expanded
         st.markdown("**Step 4 — Derive pollution targets**")
         st.code(
             "microplastic_g_per_km = abrasion * 0.60 / 1000\n"
-            "# 60% of worn rubber → particles <5mm\n\n"
-            "dust_pm25_ug_m3 = abrasion * 0.15 / 1000 * 1e6 / 1000\n"
-            "# 15% → fine airborne PM2.5 dust\n"
-            "# dispersed in 1000 m³ air volume/km",
+            "# 60% of worn rubber → particles <5mm",
             language="python"
         )
 

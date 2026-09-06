@@ -36,11 +36,10 @@ road_map = {"GOOD": 0, "NORMAL": 1, "ROUGH": 2}
 df["road_encoded"] = df["road_condition"].map(road_map).fillna(0)
 env_features.append("road_encoded")
 
-# Targets: 3 environmental outputs
+# Targets: 2 environmental outputs
 env_targets = [
     "abrasion_rate_mg_km",
     "microplastic_g_per_km",
-    "dust_pm25_ug_m3",
 ]
 
 X = df[env_features]

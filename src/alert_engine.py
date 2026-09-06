@@ -181,27 +181,6 @@ def generate_alert(row):
                 "Environmental impact is high."
         })
 
-    # --------------------------
-    # Environmental — PM2.5 Dust
-    # --------------------------
-
-    dust = float(row.get("dust_pm25_ug_m3", 0))
-
-    if dust > 60:
-        alerts.append({
-            "severity": "CRITICAL",
-            "message":
-                f"Toxic PM2.5 at dangerous levels ({dust:.1f} µg/m³). "
-                "Hazardous to health."
-        })
-    elif dust > 35:
-        alerts.append({
-            "severity": "WARNING",
-            "message":
-                f"High PM2.5 emission ({dust:.1f} µg/m³). "
-                "Exceeds WHO safe air quality threshold."
-        })
-
     if not alerts:
 
         alerts.append({

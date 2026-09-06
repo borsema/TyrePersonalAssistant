@@ -59,14 +59,9 @@ def compute_env_metrics(speed_kmh, vehicle_load_kg, braking_intensity,
     # Microplastics: ~60% of abrasion mass becomes particles < 5mm
     microplastic_g_per_km = abrasion_rate * 0.60 / 1000.0
 
-    # PM2.5 dust: ~15% of abrasion becomes fine toxic dust (ug/m3 estimate)
-    # Assumes dispersion in 1000 m3 air volume per km
-    dust_pm25_ug_m3 = (abrasion_rate * 0.15) / 1000.0 * 1e6 / 1000.0
-
     return (
         round(abrasion_rate, 3),
         round(microplastic_g_per_km, 5),
-        round(dust_pm25_ug_m3, 3)
     )
 
 
@@ -208,7 +203,7 @@ for vehicle_num in range(1, NUM_VEHICLES + 1):
             wear_ratio = min(1.0, distance_km / BASE_TYRE_LIFE_KM)
 
             # Environmental metrics
-            abrasion_rate, microplastic_g_per_km, dust_pm25_ug_m3 = compute_env_metrics(
+            abrasion_rate, microplastic_g_per_km = compute_env_metrics(
                 speed_kmh, vehicle_load_kg, braking_intensity,
                 weather, wear_ratio, vibration
             )
@@ -256,7 +251,6 @@ for vehicle_num in range(1, NUM_VEHICLES + 1):
                 "wear_ratio":            round(wear_ratio, 4),
                 "abrasion_rate_mg_km":   abrasion_rate,
                 "microplastic_g_per_km": microplastic_g_per_km,
-                "dust_pm25_ug_m3":       dust_pm25_ug_m3,
                 "tyre_health_status":    health_status,
                 "remaining_life_km":     round(remaining_life_km, 2),
             })
@@ -269,5 +263,5 @@ print(f"Total records: {len(df):,}")
 print("\nHealth Status Distribution:")
 print(df["tyre_health_status"].value_counts())
 print("\nEnvironmental Metrics Summary:")
-print(df[["abrasion_rate_mg_km", "microplastic_g_per_km", "dust_pm25_ug_m3"]].describe())
+print(df[["abrasion_rate_mg_km", "microplastic_g_per_km"]].describe())
 print(f"\nData saved to: {OUTPUT_PATH}")

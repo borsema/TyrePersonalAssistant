@@ -31,12 +31,10 @@ def compute_env_metrics(speed_kmh, vehicle_load_kg, braking_intensity,
 
     abrasion_rate        = base * speed_factor * load_factor * brake_factor * w_factor * wear_factor * vib_factor
     microplastic_g_per_km = abrasion_rate * 0.60 / 1000.0
-    dust_pm25_ug_m3      = (abrasion_rate * 0.15) / 1000.0 * 1e6 / 1000.0
 
     return (
         round(abrasion_rate, 3),
         round(microplastic_g_per_km, 5),
-        round(dust_pm25_ug_m3, 3),
     )
 
 
@@ -53,7 +51,7 @@ def initialize_new_tyres():
 
     for position in TYRE_POSITIONS:
 
-        abrasion, microplastic, dust = compute_env_metrics(
+        abrasion, microplastic = compute_env_metrics(
             0, vehicle_load_kg, 0.0, weather, 0.0, 0.10
         )
 
@@ -73,7 +71,6 @@ def initialize_new_tyres():
             "temperature_change":    0.0,
             "abrasion_rate_mg_km":   abrasion,
             "microplastic_g_per_km": microplastic,
-            "dust_pm25_ug_m3":       dust,
             "simulation_step":       0,
         })
 
@@ -192,7 +189,7 @@ def simulate_next_interval(current_state):
 
         vibration = generate_vibration(new_age)
 
-        abrasion, microplastic, dust = compute_env_metrics(
+        abrasion, microplastic = compute_env_metrics(
             vehicle_speed, vehicle_load_kg, braking_intensity,
             weather, wear_ratio, vibration
         )
@@ -213,7 +210,6 @@ def simulate_next_interval(current_state):
             "temperature_change":    temperature_change,
             "abrasion_rate_mg_km":   abrasion,
             "microplastic_g_per_km": microplastic,
-            "dust_pm25_ug_m3":       dust,
             "simulation_step":       int(row["simulation_step"]) + 1,
         })
 
