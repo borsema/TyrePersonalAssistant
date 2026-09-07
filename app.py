@@ -217,6 +217,18 @@ with top2:
             # Update dashboard
             st.rerun()
 
+        # ── Caption under button ──────────────────────────────
+        _min_dist = round(30 * (10/60) * 50)   # 30 km/h → ~250 km
+        _max_dist = round(100 * (10/60) * 50)  # 100 km/h → ~833 km
+        st.markdown(
+            f"<div style='text-align:center;color:#4a6a80;font-size:10px;"
+            f"letter-spacing:0.5px;margin-top:2px;'>"
+            f"10 min ≈ <b style='color:#39a6ff;'>{_min_dist}–{_max_dist} km</b> tyre wear"
+            f"&nbsp;&nbsp;(speed × 50× factor)"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
 
 # ============================================================
 # HELPER FUNCTIONS
