@@ -175,6 +175,9 @@ div.stButton > button:hover {
     box-shadow: 0 0 20px rgba(57,166,255,0.6) !important;
     color: #fff !important;
 }
+iframe {
+    margin-top: -20px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -221,8 +224,8 @@ with top2:
         _min_dist = round(30 * (10/60) * 50)   # 30 km/h → ~250 km
         _max_dist = round(100 * (10/60) * 50)  # 100 km/h → ~833 km
         st.markdown(
-            f"<div style='text-align:center;color:#4a6a80;font-size:10px;"
-            f"letter-spacing:0.5px;margin-top:2px;'>"
+            f"<div style='text-align:center;color:#4a6a80;font-size:13px;"
+            f"letter-spacing:0.5px;margin-top:-12px;'>"
             f"10 min ≈ <b style='color:#39a6ff;'>{_min_dist}–{_max_dist} km</b> distance covered"
             f"&nbsp;&nbsp;(speed × 10/60 × 50)"
             f"</div>",
