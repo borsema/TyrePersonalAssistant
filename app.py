@@ -943,7 +943,7 @@ html,body{{
 .env-unit{{font-size:8px;color:#4a6a5a;margin-top:3px;}}
 
 /* ── MOBILE ── */
-@media screen and (max-width:680px){{
+@media screen and (max-width:900px){{
     .dash{{padding:10px 8px;}}
 
     .hdr{{height:auto;flex-direction:column;text-align:center;gap:4px;padding-bottom:10px;}}
@@ -1893,15 +1893,15 @@ html,body{{
 
 <script>
 // Auto-resize iframe to actual content height
-(function resizeIframe() {{
-    var h = document.body.scrollHeight || document.documentElement.scrollHeight;
+function sendHeight() {{
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
     window.parent.postMessage({{type:"streamlit:setFrameHeight", height:h}}, "*");
-    // Re-check after fonts/images settle
-    setTimeout(function() {{
-        var h2 = document.body.scrollHeight || document.documentElement.scrollHeight;
-        window.parent.postMessage({{type:"streamlit:setFrameHeight", height:h2}}, "*");
-    }}, 300);
-}})();
+}}
+sendHeight();
+setTimeout(sendHeight, 100);
+setTimeout(sendHeight, 500);
+setTimeout(sendHeight, 1000);
+window.addEventListener('resize', sendHeight);
 </script>
 
 </body>
@@ -1917,7 +1917,7 @@ html,body{{
 components.html(
     dashboard_html,
     height=1050,
-    scrolling=False
+    scrolling=True
 )
 
 
