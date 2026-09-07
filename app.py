@@ -223,8 +223,8 @@ with top2:
         st.markdown(
             f"<div style='text-align:center;color:#4a6a80;font-size:10px;"
             f"letter-spacing:0.5px;margin-top:2px;'>"
-            f"10 min ≈ <b style='color:#39a6ff;'>{_min_dist}–{_max_dist} km</b> tyre wear"
-            f"&nbsp;&nbsp;(speed × 50× factor)"
+            f"10 min ≈ <b style='color:#39a6ff;'>{_min_dist}–{_max_dist} km</b> distance covered"
+            f"&nbsp;&nbsp;(speed × 10/60 × 50)"
             f"</div>",
             unsafe_allow_html=True
         )
