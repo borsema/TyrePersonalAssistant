@@ -1891,6 +1891,18 @@ html,body{{
 
 </div>
 
+<script>
+// Auto-resize iframe to actual content height
+(function resizeIframe() {{
+    var h = document.body.scrollHeight || document.documentElement.scrollHeight;
+    window.parent.postMessage({{type:"streamlit:setFrameHeight", height:h}}, "*");
+    // Re-check after fonts/images settle
+    setTimeout(function() {{
+        var h2 = document.body.scrollHeight || document.documentElement.scrollHeight;
+        window.parent.postMessage({{type:"streamlit:setFrameHeight", height:h2}}, "*");
+    }}, 300);
+}})();
+</script>
 
 </body>
 
@@ -1904,8 +1916,8 @@ html,body{{
 
 components.html(
     dashboard_html,
-    height=1800,
-    scrolling=True
+    height=1050,
+    scrolling=False
 )
 
 
