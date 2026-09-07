@@ -838,21 +838,12 @@ html,body{{
 }}
 
 .dash{{
-    padding:14px 16px;
+    padding:14px 24px;
     background:radial-gradient(ellipse at center,#0e2840 0%,#060f1a 40%,#03070d 80%);
 }}
 
 /* ── HEADER ── */
-.hdr{{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    min-height:64px;
-    border-bottom:1px solid rgba(55,150,255,0.2);
-    margin-bottom:12px;
-    flex-wrap:wrap;
-    gap:6px;
-}}
+.hdr{{display:flex;justify-content:space-between;align-items:center;height:64px;border-bottom:1px solid rgba(55,150,255,0.2);margin-bottom:12px;}}
 .hdr-left{{width:30%;color:#8fa4b8;font-size:12px;letter-spacing:1px;}}
 .hdr-connected{{color:#30e46c;font-size:10px;font-weight:bold;margin-top:5px;}}
 .hdr-center{{width:40%;text-align:center;}}
@@ -861,12 +852,7 @@ html,body{{
 .hdr-right{{width:30%;text-align:right;color:#8fa4b8;font-size:12px;}}
 
 /* ── COCKPIT ── */
-.cockpit{{
-    display:grid;
-    grid-template-columns:1fr 1.4fr 1fr;
-    gap:16px;
-    min-height:480px;
-}}
+.cockpit{{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;min-height:480px;}}
 
 /* ── GAUGES ── */
 .gauge-wrap{{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;}}
@@ -888,10 +874,7 @@ html,body{{
 .gauge-sub{{font-size:10px;color:#39a6ff;letter-spacing:1px;margin-top:8px;}}
 
 /* ── CAR ── */
-.car-area{{
-    position:relative;display:flex;justify-content:center;align-items:center;
-    background:radial-gradient(ellipse at center,rgba(0,100,255,0.1),transparent 70%);
-}}
+.car-area{{position:relative;display:flex;justify-content:center;align-items:center;background:radial-gradient(ellipse at center,rgba(0,100,255,0.1),transparent 70%);}}
 .car-wrap{{position:relative;width:100%;height:100%;min-height:480px;}}
 .car-svg{{position:absolute;width:240px;height:400px;top:50%;left:50%;transform:translate(-50%,-50%);}}
 
@@ -912,10 +895,7 @@ html,body{{
 .tc-rr{{bottom:30px;right:8px;}}
 
 /* ── STATUS BAR ── */
-.status-bar{{
-    margin:10px 0;padding:12px 20px;text-align:center;
-    border-radius:12px;border:1px solid {overall_color};background:rgba(0,0,0,0.3);
-}}
+.status-bar{{margin:10px 0;padding:12px 20px;text-align:center;border-radius:12px;border:1px solid {overall_color};background:rgba(0,0,0,0.3);}}
 .status-lbl{{font-size:10px;color:#6a85a0;letter-spacing:2px;}}
 .status-val{{font-size:18px;font-weight:800;color:{overall_color};letter-spacing:3px;margin-top:2px;}}
 .status-msg{{font-size:10px;color:#8aa0b0;margin-top:3px;}}
@@ -962,48 +942,43 @@ html,body{{
 .env-val{{font-size:18px;font-weight:800;line-height:1;}}
 .env-unit{{font-size:8px;color:#4a6a5a;margin-top:3px;}}
 
-/* ── MOBILE (applied via JS class too) ── */
-@media (max-width:700px){{
-    body.mobile .gauge-wrap{{display:none;}}
-    body.mobile .cockpit{{grid-template-columns:1fr;min-height:auto;gap:10px;}}
-    body.mobile .car-area{{min-height:340px;}}
-    body.mobile .car-wrap{{min-height:340px;}}
-    body.mobile .car-svg{{width:150px;height:260px;}}
-    body.mobile .tc{{width:105px;padding:7px;}}
-    body.mobile .tc-psi{{font-size:16px;}}
-    body.mobile .tc-temp{{font-size:9px;}}
-    body.mobile .tc-fl{{top:16px;left:2px;}}
-    body.mobile .tc-fr{{top:16px;right:2px;}}
-    body.mobile .tc-rl{{bottom:8px;left:2px;}}
-    body.mobile .tc-rr{{bottom:8px;right:2px;}}
-    body.mobile .bottom{{grid-template-columns:1fr;gap:10px;}}
-    body.mobile .panel{{min-height:auto;}}
-    body.mobile .health-wrap{{flex-direction:column;align-items:center;}}
-    body.mobile .rul-val{{font-size:20px;}}
-    body.mobile .rul-item{{padding:12px 10px;}}
-    body.mobile .hdr{{flex-direction:column;height:auto;text-align:center;padding-bottom:8px;}}
-    body.mobile .hdr-left,.hdr-center,.hdr-right{{width:100%;text-align:center;}}
-    body.mobile .footer{{font-size:11px;letter-spacing:1px;}}
-    body.mobile .dash{{padding:10px 8px;}}
-    body.mobile .status-val{{font-size:15px;}}
+/* ── MOBILE ── */
+@media screen and (max-width:680px){{
+    .dash{{padding:10px 8px;}}
+
+    .hdr{{height:auto;flex-direction:column;text-align:center;gap:4px;padding-bottom:10px;}}
+    .hdr-left{{width:100%;text-align:center;}}
+    .hdr-center{{width:100%;text-align:center;}}
+    .hdr-right{{width:100%;text-align:center;}}
+
+    .cockpit{{grid-template-columns:1fr;min-height:auto;gap:8px;}}
+    .gauge-wrap{{display:none;}}
+    .car-area{{min-height:340px;}}
+    .car-wrap{{min-height:340px;}}
+    .car-svg{{width:150px;height:260px;}}
+
+    .tc{{width:108px;padding:8px;}}
+    .tc-psi{{font-size:17px;}}
+    .tc-temp{{font-size:9px;}}
+    .tc-fl{{top:18px;left:2px;}}
+    .tc-fr{{top:18px;right:2px;}}
+    .tc-rl{{bottom:10px;left:2px;}}
+    .tc-rr{{bottom:10px;right:2px;}}
+
+    .status-val{{font-size:14px;}}
+
+    .bottom{{grid-template-columns:1fr;gap:10px;}}
+    .panel{{min-height:auto;}}
+
+    .health-wrap{{flex-direction:column;align-items:center;}}
+
+    .rul-val{{font-size:20px;}}
+    .rul-item{{padding:12px 10px;}}
+
+    .footer{{font-size:11px;letter-spacing:1px;}}
 }}
 
 </style>
-
-<script>
-// Apply mobile class immediately — works inside iframe
-(function(){{
-    var w = window.innerWidth || document.documentElement.clientWidth || screen.width;
-    if(w <= 700){{
-        document.body.classList.add('mobile');
-    }}
-    window.addEventListener('resize', function(){{
-        var cw = window.innerWidth || document.documentElement.clientWidth;
-        if(cw <= 700) document.body.classList.add('mobile');
-        else document.body.classList.remove('mobile');
-    }});
-}})();
-</script>
 
 
 </head>
