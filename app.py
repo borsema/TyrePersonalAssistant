@@ -826,15 +826,9 @@ dashboard_html = f"""
 
 <style>
 
-*{{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}}
+*{{box-sizing:border-box;margin:0;padding:0;}}
 
-
-html,
-body{{
+html,body{{
     width:100%;
     background:#03070d;
     color:#fff;
@@ -843,24 +837,12 @@ body{{
     overflow-y:auto;
 }}
 
-
 .dash{{
-    min-height:100vh;
     padding:14px 16px;
-    background:
-        radial-gradient(
-            ellipse at center,
-            #0e2840 0%,
-            #060f1a 40%,
-            #03070d 80%
-        );
+    background:radial-gradient(ellipse at center,#0e2840 0%,#060f1a 40%,#03070d 80%);
 }}
 
-
-/* ========================================================= */
-/* HEADER */
-/* ========================================================= */
-
+/* ── HEADER ── */
 .hdr{{
     display:flex;
     justify-content:space-between;
@@ -871,51 +853,14 @@ body{{
     flex-wrap:wrap;
     gap:6px;
 }}
+.hdr-left{{width:30%;color:#8fa4b8;font-size:12px;letter-spacing:1px;}}
+.hdr-connected{{color:#30e46c;font-size:10px;font-weight:bold;margin-top:5px;}}
+.hdr-center{{width:40%;text-align:center;}}
+.hdr-logo{{font-size:28px;font-weight:900;letter-spacing:6px;}}
+.hdr-sub{{font-size:9px;letter-spacing:5px;color:#7a90a4;margin-top:3px;}}
+.hdr-right{{width:30%;text-align:right;color:#8fa4b8;font-size:12px;}}
 
-.hdr-left{{
-    width:30%;
-    color:#8fa4b8;
-    font-size:12px;
-    letter-spacing:1px;
-}}
-
-.hdr-connected{{
-    color:#30e46c;
-    font-size:10px;
-    font-weight:bold;
-    margin-top:5px;
-}}
-
-.hdr-center{{
-    width:40%;
-    text-align:center;
-}}
-
-.hdr-logo{{
-    font-size:28px;
-    font-weight:900;
-    letter-spacing:6px;
-}}
-
-.hdr-sub{{
-    font-size:9px;
-    letter-spacing:5px;
-    color:#7a90a4;
-    margin-top:3px;
-}}
-
-.hdr-right{{
-    width:30%;
-    text-align:right;
-    color:#8fa4b8;
-    font-size:12px;
-}}
-
-
-/* ========================================================= */
-/* COCKPIT */
-/* ========================================================= */
-
+/* ── COCKPIT ── */
 .cockpit{{
     display:grid;
     grid-template-columns:1fr 1.4fr 1fr;
@@ -923,503 +868,142 @@ body{{
     min-height:480px;
 }}
 
-
-/* ========================================================= */
-/* GAUGES */
-/* ========================================================= */
-
-.gauge-wrap{{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:10px;
-}}
-
-.gauge-label{{
-    color:#6a85a0;
-    font-size:10px;
-    letter-spacing:3px;
-}}
-
+/* ── GAUGES ── */
+.gauge-wrap{{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;}}
+.gauge-label{{color:#6a85a0;font-size:10px;letter-spacing:3px;}}
 .gauge-ring{{
-    position:relative;
-    width:220px;
-    height:220px;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:
-        conic-gradient(
-            from 220deg,
-            #1570cc 0deg,
-            #1ea7ff 120deg,
-            rgba(30,167,255,0.08) 120deg,
-            rgba(30,167,255,0.08) 360deg
-        );
+    position:relative;width:220px;height:220px;border-radius:50%;
+    display:flex;justify-content:center;align-items:center;
+    background:conic-gradient(from 220deg,#1570cc 0deg,#1ea7ff 120deg,rgba(30,167,255,0.08) 120deg,rgba(30,167,255,0.08) 360deg);
     box-shadow:0 0 30px rgba(0,120,255,0.3);
 }}
-
 .gauge-ring::before{{
-    content:"";
-    position:absolute;
-    width:178px;
-    height:178px;
-    border-radius:50%;
+    content:"";position:absolute;width:178px;height:178px;border-radius:50%;
     background:radial-gradient(circle,#0d1a26 0%,#040a10 70%);
     border:1px solid #173d5e;
 }}
+.gauge-inner{{position:relative;z-index:2;text-align:center;}}
+.gauge-val{{font-size:52px;font-weight:800;letter-spacing:-2px;}}
+.gauge-unit{{font-size:12px;color:#6a85a0;letter-spacing:2px;margin-top:2px;}}
+.gauge-sub{{font-size:10px;color:#39a6ff;letter-spacing:1px;margin-top:8px;}}
 
-.gauge-inner{{
-    position:relative;
-    z-index:2;
-    text-align:center;
-}}
-
-.gauge-val{{
-    font-size:52px;
-    font-weight:800;
-    letter-spacing:-2px;
-}}
-
-.gauge-unit{{
-    font-size:12px;
-    color:#6a85a0;
-    letter-spacing:2px;
-    margin-top:2px;
-}}
-
-.gauge-sub{{
-    font-size:10px;
-    color:#39a6ff;
-    letter-spacing:1px;
-    margin-top:8px;
-}}
-
-
-/* ========================================================= */
-/* CAR AREA */
-/* ========================================================= */
-
+/* ── CAR ── */
 .car-area{{
-    position:relative;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    position:relative;display:flex;justify-content:center;align-items:center;
     background:radial-gradient(ellipse at center,rgba(0,100,255,0.1),transparent 70%);
 }}
+.car-wrap{{position:relative;width:100%;height:100%;min-height:480px;}}
+.car-svg{{position:absolute;width:240px;height:400px;top:50%;left:50%;transform:translate(-50%,-50%);}}
 
-.car-wrap{{
-    position:relative;
-    width:100%;
-    height:100%;
-    min-height:480px;
-}}
-
-.car-svg{{
-    position:absolute;
-    width:240px;
-    height:400px;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-}}
-
-
-/* ========================================================= */
-/* TYRE CARDS */
-/* ========================================================= */
-
+/* ── TYRE CARDS ── */
 .tc{{
-    position:absolute;
-    width:150px;
+    position:absolute;width:150px;
     background:linear-gradient(145deg,rgba(12,22,34,0.97),rgba(4,8,14,0.97));
-    border:1px solid rgba(50,120,180,0.4);
-    border-radius:14px;
-    padding:12px;
+    border:1px solid rgba(50,120,180,0.4);border-radius:14px;padding:12px;
 }}
+.tc-name{{font-size:9px;letter-spacing:2px;color:#5a7a90;margin-bottom:6px;}}
+.tc-arc{{display:flex;align-items:center;gap:6px;}}
+.tc-psi{{font-size:24px;font-weight:800;line-height:1;}}
+.tc-psi-lbl{{font-size:9px;color:#5a7a90;letter-spacing:1px;}}
+.tc-temp{{font-size:11px;color:#c0d0dc;margin-top:4px;}}
+.tc-fl{{top:40px;left:8px;}}
+.tc-fr{{top:40px;right:8px;}}
+.tc-rl{{bottom:30px;left:8px;}}
+.tc-rr{{bottom:30px;right:8px;}}
 
-.tc-name{{
-    font-size:9px;
-    letter-spacing:2px;
-    color:#5a7a90;
-    margin-bottom:6px;
-}}
-
-.tc-arc{{
-    display:flex;
-    align-items:center;
-    gap:6px;
-}}
-
-.tc-psi{{
-    font-size:24px;
-    font-weight:800;
-    line-height:1;
-}}
-
-.tc-psi-lbl{{
-    font-size:9px;
-    color:#5a7a90;
-    letter-spacing:1px;
-}}
-
-.tc-temp{{
-    font-size:11px;
-    color:#c0d0dc;
-    margin-top:4px;
-}}
-
-.tc-fl{{ top:40px;   left:8px;  }}
-.tc-fr{{ top:40px;   right:8px; }}
-.tc-rl{{ bottom:30px;left:8px;  }}
-.tc-rr{{ bottom:30px;right:8px; }}
-
-
-/* ========================================================= */
-/* STATUS BAR */
-/* ========================================================= */
-
+/* ── STATUS BAR ── */
 .status-bar{{
-    margin:10px 0;
-    padding:12px 20px;
-    text-align:center;
-    border-radius:12px;
-    border:1px solid {overall_color};
-    background:rgba(0,0,0,0.3);
+    margin:10px 0;padding:12px 20px;text-align:center;
+    border-radius:12px;border:1px solid {overall_color};background:rgba(0,0,0,0.3);
+}}
+.status-lbl{{font-size:10px;color:#6a85a0;letter-spacing:2px;}}
+.status-val{{font-size:18px;font-weight:800;color:{overall_color};letter-spacing:3px;margin-top:2px;}}
+.status-msg{{font-size:10px;color:#8aa0b0;margin-top:3px;}}
+
+/* ── BOTTOM PANELS ── */
+.bottom{{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:14px;margin-top:12px;}}
+.panel{{border-radius:16px;padding:18px;min-height:260px;background:linear-gradient(145deg,#0a1520,#040810);border:1px solid rgba(40,100,150,0.4);}}
+.panel-title{{color:#6a85a0;font-size:10px;letter-spacing:2px;font-weight:bold;margin-bottom:10px;}}
+
+/* ── HEALTH ── */
+.health-wrap{{display:flex;align-items:center;gap:20px;margin-top:12px;}}
+.health-circle{{position:relative;width:120px;height:120px;flex-shrink:0;}}
+.health-circle svg{{position:absolute;top:0;left:0;}}
+.health-num{{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}}
+.health-big{{font-size:34px;font-weight:800;}}
+.health-small{{font-size:11px;color:#5a7a90;}}
+.health-rows{{flex:1;}}
+.health-row{{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}}
+.health-row-lbl{{font-size:11px;font-weight:bold;}}
+.health-row-num{{font-size:13px;font-weight:800;}}
+
+/* ── ALERTS ── */
+.alert-scroll{{max-height:280px;overflow-y:auto;padding-right:4px;}}
+.alert-scroll::-webkit-scrollbar{{width:3px;}}
+.alert-scroll::-webkit-scrollbar-thumb{{background:#1a3a5a;border-radius:3px;}}
+
+/* ── RUL ── */
+.rul-grid{{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}}
+.rul-item{{background:rgba(255,255,255,0.03);border:1px solid rgba(50,120,180,0.25);border-radius:10px;padding:20px 14px;}}
+.rul-pos{{font-size:10px;letter-spacing:2px;color:#5a7a90;margin-bottom:6px;}}
+.rul-val{{font-size:26px;font-weight:800;line-height:1;}}
+.rul-km{{font-size:11px;color:#5a7a90;margin-left:2px;}}
+.rul-bar{{width:100%;height:6px;border-radius:10px;margin-top:6px;background:linear-gradient(90deg,#ff3b3b 0%,#ff9f1c 30%,#ffd23f 55%,#21e36d 80%);position:relative;overflow:visible;}}
+.rul-marker{{position:absolute;top:-3px;width:3px;height:12px;background:#fff;border-radius:2px;}}
+
+/* ── FOOTER ── */
+.footer{{text-align:center;color:#3a5060;font-size:16px;letter-spacing:3px;padding:16px 0 8px 0;}}
+
+/* ── ENV ── */
+.env-panel{{border-radius:16px;padding:16px 20px;background:linear-gradient(145deg,#0a1a10,#040810);border:1px solid rgba(30,180,80,0.3);margin-top:12px;}}
+.env-grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;}}
+.env-card{{background:rgba(255,255,255,0.03);border:1px solid rgba(50,180,100,0.2);border-radius:10px;padding:10px;text-align:center;}}
+.env-label{{font-size:8px;letter-spacing:1.5px;color:#5a8a6a;margin-bottom:6px;}}
+.env-val{{font-size:18px;font-weight:800;line-height:1;}}
+.env-unit{{font-size:8px;color:#4a6a5a;margin-top:3px;}}
+
+/* ── MOBILE (applied via JS class too) ── */
+@media (max-width:700px){{
+    body.mobile .gauge-wrap{{display:none;}}
+    body.mobile .cockpit{{grid-template-columns:1fr;min-height:auto;gap:10px;}}
+    body.mobile .car-area{{min-height:340px;}}
+    body.mobile .car-wrap{{min-height:340px;}}
+    body.mobile .car-svg{{width:150px;height:260px;}}
+    body.mobile .tc{{width:105px;padding:7px;}}
+    body.mobile .tc-psi{{font-size:16px;}}
+    body.mobile .tc-temp{{font-size:9px;}}
+    body.mobile .tc-fl{{top:16px;left:2px;}}
+    body.mobile .tc-fr{{top:16px;right:2px;}}
+    body.mobile .tc-rl{{bottom:8px;left:2px;}}
+    body.mobile .tc-rr{{bottom:8px;right:2px;}}
+    body.mobile .bottom{{grid-template-columns:1fr;gap:10px;}}
+    body.mobile .panel{{min-height:auto;}}
+    body.mobile .health-wrap{{flex-direction:column;align-items:center;}}
+    body.mobile .rul-val{{font-size:20px;}}
+    body.mobile .rul-item{{padding:12px 10px;}}
+    body.mobile .hdr{{flex-direction:column;height:auto;text-align:center;padding-bottom:8px;}}
+    body.mobile .hdr-left,.hdr-center,.hdr-right{{width:100%;text-align:center;}}
+    body.mobile .footer{{font-size:11px;letter-spacing:1px;}}
+    body.mobile .dash{{padding:10px 8px;}}
+    body.mobile .status-val{{font-size:15px;}}
 }}
 
-.status-lbl{{
-    font-size:10px;
-    color:#6a85a0;
-    letter-spacing:2px;
-}}
+</style>
 
-.status-val{{
-    font-size:18px;
-    font-weight:800;
-    color:{overall_color};
-    letter-spacing:3px;
-    margin-top:2px;
-}}
-
-.status-msg{{
-    font-size:10px;
-    color:#8aa0b0;
-    margin-top:3px;
-}}
-
-
-/* ========================================================= */
-/* BOTTOM PANELS */
-/* ========================================================= */
-
-.bottom{{
-    display:grid;
-    grid-template-columns:1fr 1.3fr 1fr;
-    gap:14px;
-    margin-top:12px;
-}}
-
-.panel{{
-    border-radius:16px;
-    padding:18px;
-    min-height:260px;
-    background:linear-gradient(145deg,#0a1520,#040810);
-    border:1px solid rgba(40,100,150,0.4);
-}}
-
-.panel-title{{
-    color:#6a85a0;
-    font-size:10px;
-    letter-spacing:2px;
-    font-weight:bold;
-    margin-bottom:10px;
-}}
-
-
-/* ========================================================= */
-/* HEALTH */
-/* ========================================================= */
-
-.health-wrap{{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    margin-top:12px;
-}}
-
-.health-circle{{
-    position:relative;
-    width:120px;
-    height:120px;
-    flex-shrink:0;
-}}
-
-.health-circle svg{{
-    position:absolute;
-    top:0;
-    left:0;
-}}
-
-.health-num{{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    text-align:center;
-}}
-
-.health-big{{
-    font-size:34px;
-    font-weight:800;
-}}
-
-.health-small{{
-    font-size:11px;
-    color:#5a7a90;
-}}
-
-.health-rows{{ flex:1; }}
-
-.health-row{{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:14px;
-}}
-
-.health-row-lbl{{
-    font-size:11px;
-    font-weight:bold;
-}}
-
-.health-row-num{{
-    font-size:13px;
-    font-weight:800;
-}}
-
-
-/* ========================================================= */
-/* ALERTS */
-/* ========================================================= */
-
-.alert-scroll{{
-    max-height:280px;
-    overflow-y:auto;
-    padding-right:4px;
-}}
-
-.alert-scroll::-webkit-scrollbar{{ width:3px; }}
-.alert-scroll::-webkit-scrollbar-thumb{{
-    background:#1a3a5a;
-    border-radius:3px;
-}}
-
-
-/* ========================================================= */
-/* REMAINING LIFE */
-/* ========================================================= */
-
-.rul-grid{{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:6px;
-}}
-
-.rul-item{{
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(50,120,180,0.25);
-    border-radius:10px;
-    padding:20px 14px;
-}}
-
-.rul-pos{{
-    font-size:10px;
-    letter-spacing:2px;
-    color:#5a7a90;
-    margin-bottom:6px;
-}}
-
-.rul-val{{
-    font-size:26px;
-    font-weight:800;
-    line-height:1;
-}}
-
-.rul-km{{
-    font-size:11px;
-    color:#5a7a90;
-    margin-left:2px;
-}}
-
-.rul-bar{{
-    width:100%;
-    height:6px;
-    border-radius:10px;
-    margin-top:6px;
-    background:linear-gradient(90deg,#ff3b3b 0%,#ff9f1c 30%,#ffd23f 55%,#21e36d 80%);
-    position:relative;
-    overflow:visible;
-}}
-
-.rul-marker{{
-    position:absolute;
-    top:-3px;
-    width:3px;
-    height:12px;
-    background:#fff;
-    border-radius:2px;
-}}
-
-
-/* ========================================================= */
-/* FOOTER */
-/* ========================================================= */
-
-.footer{{
-    text-align:center;
-    color:#3a5060;
-    font-size:16px;
-    letter-spacing:3px;
-    padding:16px 0 8px 0;
-}}
-
-
-/* ========================================================= */
-/* ENV PANEL */
-/* ========================================================= */
-
-.env-panel{{
-    border-radius:16px;
-    padding:16px 20px;
-    background:linear-gradient(145deg,#0a1a10,#040810);
-    border:1px solid rgba(30,180,80,0.3);
-    margin-top:12px;
-}}
-.env-grid{{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    margin-top:10px;
-}}
-.env-card{{
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(50,180,100,0.2);
-    border-radius:10px;
-    padding:10px;
-    text-align:center;
-}}
-.env-label{{
-    font-size:8px;
-    letter-spacing:1.5px;
-    color:#5a8a6a;
-    margin-bottom:6px;
-}}
-.env-val{{
-    font-size:18px;
-    font-weight:800;
-    line-height:1;
-}}
-.env-unit{{
-    font-size:8px;
-    color:#4a6a5a;
-    margin-top:3px;
-}}
-
-
-/* ========================================================= */
-/* MOBILE RESPONSIVE */
-/* ========================================================= */
-
-@media (max-width: 700px) {{
-
-    .dash{{
-        padding:10px 10px;
+<script>
+// Apply mobile class immediately — works inside iframe
+(function(){{
+    var w = window.innerWidth || document.documentElement.clientWidth || screen.width;
+    if(w <= 700){{
+        document.body.classList.add('mobile');
     }}
-
-    /* Header stacks to 3 rows */
-    .hdr{{
-        flex-direction:column;
-        height:auto;
-        text-align:center;
-        gap:4px;
-        padding-bottom:10px;
-    }}
-    .hdr-left, .hdr-center, .hdr-right{{
-        width:100%;
-        text-align:center;
-    }}
-
-    /* Cockpit: gauges hidden, car takes full width */
-    .cockpit{{
-        grid-template-columns:1fr;
-        min-height:auto;
-        gap:10px;
-    }}
-    .gauge-wrap{{
-        display:none;
-    }}
-    .car-area{{
-        min-height:360px;
-    }}
-    .car-wrap{{
-        min-height:360px;
-    }}
-    .car-svg{{
-        width:160px;
-        height:280px;
-    }}
-
-    /* Tyre cards — smaller on mobile */
-    .tc{{
-        width:110px;
-        padding:8px;
-    }}
-    .tc-psi{{ font-size:18px; }}
-    .tc-temp{{ font-size:10px; }}
-    .tc-fl{{ top:20px;    left:4px;  }}
-    .tc-fr{{ top:20px;    right:4px; }}
-    .tc-rl{{ bottom:10px; left:4px;  }}
-    .tc-rr{{ bottom:10px; right:4px; }}
-
-    /* Bottom panels: single column stack */
-    .bottom{{
-        grid-template-columns:1fr;
-        gap:10px;
-    }}
-    .panel{{
-        min-height:auto;
-    }}
-
-    /* Health circle smaller */
-    .health-wrap{{
-        flex-direction:column;
-        align-items:center;
-    }}
-
-    /* RUL grid stays 2 cols but smaller text */
-    .rul-val{{ font-size:20px; }}
-    .rul-item{{ padding:12px 10px; }}
-
-    /* Gauge ring scale down if shown */
-    .gauge-ring{{
-        width:160px;
-        height:160px;
-    }}
-    .gauge-ring::before{{
-        width:128px;
-        height:128px;
-    }}
-    .gauge-val{{ font-size:38px; }}
-
-    .footer{{
-        font-size:11px;
-        letter-spacing:1px;
-    }}
-}}
+    window.addEventListener('resize', function(){{
+        var cw = window.innerWidth || document.documentElement.clientWidth;
+        if(cw <= 700) document.body.classList.add('mobile');
+        else document.body.classList.remove('mobile');
+    }});
+}})();
+</script>
 
 
 </head>
@@ -2345,7 +1929,7 @@ body{{
 
 components.html(
     dashboard_html,
-    height=1100,
+    height=1800,
     scrolling=True
 )
 
