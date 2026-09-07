@@ -1,5 +1,10 @@
 import os
+import sys
 import urllib.request
+
+# Ensure project root is on path (required on Streamlit Cloud)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
